@@ -256,66 +256,68 @@ impl AssetManager {
     ) {
         let start = self.materials.len();
 
-        let configs: Vec<MaterialConfig> = self
-            .material_configs
-            .iter()
-            .skip(start)
-            .cloned()
-            .collect();
+        for i in start..self.material_configs.len() {
+            let config = self.material_configs[i].clone();
+            
+            let vertex_shader = unsafe {
+                self.load_shader(
+                    &config.vertex_shader,
+                    ShaderKindKey::Vertex,
+                    shader_manager,
+                )
+            };
 
-        for config in configs {
+            let fragment_shader = unsafe {
+                self.load_shader(
+                    &config.fragment_shader,
+                    ShaderKindKey::Fragment,
+                    shader_manager,
+                )
+            };
+
+            let albedo_texture = config.textures.albedo.as_ref().map(|path| {
+                self.load_texture(
+                    path,
+                    image_manager,
+                    command_buffer_allocator,
+                    queue.clone(),
+                )
+            });
+
+            let normal_texture = config.textures.normal.as_ref().map(|path| {
+                self.load_texture(
+                    path,
+                    image_manager,
+                    command_buffer_allocator,
+                    queue.clone(),
+                )
+            });
+
+            let roughness_texture = config.textures.roughness.as_ref().map(|path| {
+                self.load_texture(
+                    path,
+                    image_manager,
+                    command_buffer_allocator,
+                    queue.clone(),
+                )
+            });
+
+            let metallic_texture = config.textures.metallic.as_ref().map(|path| {
+                self.load_texture(
+                    path,
+                    image_manager,
+                    command_buffer_allocator,
+                    queue.clone(),
+                )
+            });
+
             let material_assets = MaterialAssets {
-                vertex_shader: unsafe {
-                    self.load_shader(
-                        &config.vertex_shader,
-                        ShaderKindKey::Vertex,
-                        shader_manager,
-                    )
-                },
-
-                fragment_shader: unsafe {
-                    self.load_shader(
-                        &config.fragment_shader,
-                        ShaderKindKey::Fragment,
-                        shader_manager,
-                    )
-                },
-
-                albedo_texture: config.textures.albedo.as_ref().map(|path| {
-                    self.load_texture(
-                        path,
-                        image_manager,
-                        command_buffer_allocator,
-                        queue.clone(),
-                    )
-                }),
-
-                normal_texture: config.textures.normal.as_ref().map(|path| {
-                    self.load_texture(
-                        path,
-                        image_manager,
-                        command_buffer_allocator,
-                        queue.clone(),
-                    )
-                }),
-
-                roughness_texture: config.textures.roughness.as_ref().map(|path| {
-                    self.load_texture(
-                        path,
-                        image_manager,
-                        command_buffer_allocator,
-                        queue.clone(),
-                    )
-                }),
-
-                metallic_texture: config.textures.metallic.as_ref().map(|path| {
-                    self.load_texture(
-                        path,
-                        image_manager,
-                        command_buffer_allocator,
-                        queue.clone(),
-                    )
-                }),
+                vertex_shader,
+                fragment_shader,
+                albedo_texture,
+                normal_texture,
+                roughness_texture,
+                metallic_texture,
             };
 
             let material = Material::init(

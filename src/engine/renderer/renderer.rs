@@ -181,7 +181,7 @@ impl Renderer {
                 vulkan_context.queue.clone(), 
             )
         };
-
+        
         let shadow_vertex_shader = unsafe {
             assets.load_shader(
                 match &config.shadow_vertex_shader {
@@ -576,26 +576,24 @@ impl Renderer {
             }
         }
 
+        builder
+            .next_subpass(
+                SubpassEndInfo::default(),
+                SubpassBeginInfo {
+                    contents: SubpassContents::SecondaryCommandBuffers,
+                    ..Default::default()
+                },
+            )
+            .unwrap();
+
         if let Some(gui) = gui {
-            let gui_cb = gui.render(
-                framebuffer.extent()
-            );
-    
-            builder
-                .next_subpass(
-                    SubpassEndInfo::default(), 
-                    SubpassBeginInfo {
-                        contents: SubpassContents::SecondaryCommandBuffers,
-                        ..Default::default()
-                    },
-                )
-                .unwrap();
-    
+            let gui_cb = gui.render(framebuffer.extent());
+
             builder
                 .execute_commands(gui_cb)
                 .unwrap();
         }
-        
+
         builder
             .end_render_pass(SubpassEndInfo::default())
             .unwrap();
