@@ -1,10 +1,7 @@
-use crate::application::app::OsmiumEngine;
-
-pub mod application;
-pub mod engine;
+use osmium::application::app::OsmiumEngine;
 
 fn main() {
-    let app = OsmiumEngine::init();
+    let app = OsmiumEngine::new();
     
     unsafe {
         app.run();

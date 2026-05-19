@@ -16,13 +16,15 @@ pub struct OsmiumObjectSystem {
     pub entities: HashSet<Entity>,
 
     pub roots: Vec<Entity>,
+    pub active_entity: Option<Entity>,
 }
 
 impl OsmiumObjectSystem {
     pub fn new() -> Self {
         Self {
             entities: HashSet::new(),
-            roots: Vec::new()
+            roots: Vec::new(),
+            active_entity: None
         }
     }
 }

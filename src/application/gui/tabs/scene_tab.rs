@@ -32,20 +32,35 @@ pub fn draw_scene_tab(
 
 fn draw_object_node(
     ui: &mut egui::Ui,
-    coordinator: &Coordinator,
+    coordinator: &mut Coordinator,
     entity: Entity,
 ) {
+    let active_entity = coordinator
+        .get_system::<OsmiumObjectSystem>()
+        .active_entity
+        .clone();
+
     let object = coordinator.get_component::<OsmiumObject>(entity);
+
+    let selected = active_entity == Some(entity);
 
     let name = object.name.clone();
     let children = object.children.clone();
 
-    egui::CollapsingHeader::new(name)
+    let response = if !children.is_empty() {
+        egui::CollapsingHeader::new(name)
         .id_source(entity)
         .default_open(true)
         .show(ui, |ui| {
             for child in children {
                 draw_object_node(ui, coordinator, child);
             }
-        });
+        }).header_response
+    } else {
+        ui.selectable_label(selected, name)
+    };
+
+    if response.clicked() {
+        coordinator.get_system_mut::<OsmiumObjectSystem>().active_entity = Some(entity);
+    }
 }

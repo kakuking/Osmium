@@ -56,7 +56,7 @@ pub struct OsmiumEngine {
 }
 
 impl OsmiumEngine {
-    pub fn init() -> Self {
+    pub fn new() -> Self {
         let mut config = RendererConfig::new();
         config.render_pass.samples = 2;
 
